@@ -784,36 +784,8 @@ app.get('/api/bills', async (req, res) => {
   
 
 
-// models/Payment.js
 
 
-const paymentSchema = new mongoose.Schema({
-  paymentID: { type: String, required: true, unique: true }, 
-  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserProfile', required: true },
-  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: false }, 
-  amount: { type: Number, required: true },
-  date: { type: Date, default: Date.now },
-  paymentMethod: {
-    type: String,
-    enum: ['Bkash', 'NetBanking', 'CreditCard'],
-    required: true
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['Pending', 'Completed', 'Failed'],
-    default: 'Pending'
-  },
-  bkashDetails: {
-    bkashNumber: String,
-    transactionId: String,
-  },
-  netBankingDetails: {
-    bankName: String,
-    accountNumber: String
-  }
-});
-
-const Payment = mongoose.model('Payment', paymentSchema);
 
 
 
@@ -891,6 +863,87 @@ app.get("/api/search", async (req, res) => {
     }
 });
 
+// ✅ Offer Schema
+const offerSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true,
+    },
+    description: String,
+    discountPercentage: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 100
+    },
+    validFrom: {
+        type: Date,
+        required: true,
+    },
+    validTo: {
+        type: Date,
+        required: true,
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    }
+}, { collection: "Offer" });
+
+const Offer = mongoose.model("Offer", offerSchema);
+//  Add a new offer
+app.post("/api/offer", async (req, res) => {
+    try {
+        const { title, description, discountPercentage, validFrom, validTo, isActive } = req.body;
+
+        if (!title || discountPercentage === undefined || !validFrom || !validTo) {
+            return res.status(400).json({ message: "Required fields missing" });
+        }
+
+        const newOffer = new Offer({
+            title,
+            description,
+            discountPercentage,
+            validFrom,
+            validTo,
+            isActive
+        });
+
+        await newOffer.save();
+        res.status(201).json({ message: "Offer created successfully", offer: newOffer });
+    } catch (error) {
+        console.error("❌ Error adding offer:", error);
+        res.status(500).json({ message: "Server error while creating offer" });
+    }
+});
+
+//  Get all offers
+app.get("/api/offers", async (req, res) => {
+    try {
+        const offers = await Offer.find();
+        res.json(offers);
+    } catch (error) {
+        console.error("❌ Error fetching offers:", error);
+        res.status(500).json({ message: "Server error while fetching offers" });
+    }
+});
+
+
+//  Delete an offer by ID
+app.delete("/api/offer/:id", async (req, res) => {
+    try {
+        const result = await Offer.findByIdAndDelete(req.params.id);
+
+        if (!result) {
+            return res.status(404).json({ message: "Offer not found" });
+        }
+
+        res.json({ message: "Offer deleted successfully" });
+    } catch (error) {
+        console.error("❌ Error deleting offer:", error);
+        res.status(500).json({ message: "Server error while deleting offer" });
+    }
+});
 
 
 
