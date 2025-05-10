@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../CSS/FrontPage.css";
+import io from "socket.io-client";
 
+const socket = io("http://localhost:5000"); // Backend address
 const FrontPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [user, setUser] = useState({
         firstName: "",
         lastName: "",
@@ -92,7 +97,6 @@ const FrontPage = () => {
                 .catch((err) => console.error("Error fetching user details", err));
         }
     }, []);
-
     useEffect(() => {
         fetch("http://localhost:5000/api/books")
             .then((res) => res.json())
@@ -113,14 +117,22 @@ const FrontPage = () => {
     const handleBookClick = (book) => {
         navigate("/books", { state: { book } });
     };
+    const handleNotificationClick = () => {
+        setShowAnnouncements(!showAnnouncements);
+        setUnreadCount(0); // Mark all as read
+    };
 
     return (
         <div className="container">
             <div className={`sidebar ${sidebarOpen ? "open" : ""}`} style={{ zIndex: 1100 }}>
-                <button className="close-btn" onClick={() => setSidebarOpen(false)}>&times;</button>
+                <button className="close-btn" onClick={() => setSidebarOpen(false)}>
+                    &times;
+                </button>
+
                 <nav className="sidebar-nav">
                     <Link to="/customerprofile">My Profile</Link>
                     <Link to="/purchase">Set Bills</Link>
+                    <Link to="/announce">Offer</Link>
                     <Link to="/information">Comparison</Link>
                     <a href="http://localhost:3001/recbook">AI Book Recommendations</a>
                     <Link to="/" onClick={handleLogout}>Log Out</Link>

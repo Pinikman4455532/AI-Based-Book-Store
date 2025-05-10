@@ -12,7 +12,7 @@ import Seller from './LOGIN/Seller'
 
 import Payment from './CUSTOMER/Payment'
 import Delivery from './SELLER/Delivery'
-
+import Offer from './Seller/Offer'
 
 import FrontPage from './CUSTOMER/FrontPage'
 import CustomerProfile from './CUSTOMER/CustomerProfile'
@@ -24,6 +24,7 @@ import HomePage from './SELLER/HomePage'
 import SellerProfile from './SELLER/SellerProfile'
 import InsertBook from './SELLER/InsertBook'
 import AllBooks from './SELLER/AllBooks'
+import CustomerInformation from './SELLER/CustomerInformation'
 function App() {
   const [username, setUsername] = useState("");
   const router = createBrowserRouter(
@@ -52,9 +53,10 @@ function App() {
       {path: "/allbooks", element: <><AllBooks /></>},
       {path: "/payments", element: <><Payment/></>},
       {path: "/delivery", element: <><Delivery/></>},
-
+      {path: "/offer", element: <><Offer/></>},
     
 
+      {path: "/customerinformation", element: <><CustomerInformation /></>},
     ]
   )
 
