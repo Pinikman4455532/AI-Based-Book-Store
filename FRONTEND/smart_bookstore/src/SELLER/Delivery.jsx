@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../CSS/Delivery.css'
 
 const App = () => {
   // State to store fetched bills and form data
@@ -31,6 +32,7 @@ const App = () => {
   // Handle submitting the form
   const handleSubmit = (e) => {
     e.preventDefault();
+    alert('Submitted Successfully')
     const billData = { email, service, quantity, totalAmount };
 
     // Save the bill data to the backend

@@ -131,40 +131,53 @@ const FrontPage = () => {
 
             <div className="main-content">
                 <header className="navbar" style={{ zIndex: sidebarOpen ? 1000 : 1050 }}>
-    <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
-        &#9776;
-    </button>
+                    <div className="UserInformation">
+                        <div className="UserName">
+                            {user.firstName ? `${user.firstName} ${user.lastName}` : "Guest"}
+                        </div>
 
-    {/* Centered search bar wrapper */}
-    <div className="search-bar-wrapper">
-        <div className="search-controls">
-            <select value={searchBy} onChange={(e) => setSearchBy(e.target.value)}>
-                <option value="title">Search by Title</option>
-                <option value="author">Search by Author</option>
-            </select>
-            <input
-                type="text"
-                placeholder={`Enter ${searchBy}`}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
-        </div>
-        {error && <p className="error">{error}</p>}
-    </div>
+                        <div className="search-container">
+                            <div className="search-controls">
+                                <select value={searchBy} onChange={(e) => setSearchBy(e.target.value)}>
+                                    <option value="title">Search by Title</option>
+                                    <option value="author">Search by Author</option>
+                                </select>
+                                <input
+                                    type="text"
+                                    placeholder={`Enter ${searchBy}`}
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                />
+                                <button onClick={handleSearch}>Search</button>
+                            </div>
 
-    <div className="UserInformation">
-        <div className="UserName">
-            {user.firstName ? `${user.firstName} ${user.lastName}` : "Guest"}
-        </div>
-        <div className="Details">
-            {user.email ? `Email: ${user.email}` : "Verify your account with mail"}<br />
-            {user.address && `Address: ${user.address}`}<br />
-            {user.mobileNumber && `Contact No: ${user.mobileNumber}`}
-        </div>
-    </div>
-</header>
+                            {error && <p className="error">{error}</p>}
 
+                            <div className="results">
+                                {results.map((book, index) => (
+                                    <div key={index} className="book-result">
+                                        <img src={book.imageURLS.medium} alt={book.title} />
+                                        <div>
+                                            <h4>{book.title}</h4>
+                                            <p>Author: {book.author}</p>
+                                            <p>Price: ${book.Price}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="Details">
+                            {user.email ? `Email: ${user.email}` : "Verify your account with mail"}<br />
+                            {user.address && `Address: ${user.address}`}<br />
+                            {user.mobileNumber && `Contact No: ${user.mobileNumber}`}
+                        </div>
+                    </div>
+
+                    <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
+                        &#9776;
+                    </button>
+                </header>
 
                 <main className="content-box">
                     <div className="books-container">
