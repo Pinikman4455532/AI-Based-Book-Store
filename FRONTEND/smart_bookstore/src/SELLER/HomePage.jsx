@@ -101,7 +101,7 @@ const HomePage = () => {
                                 <div className="flex-box-subtitle">see all books</div>
                             </div>
                             <div className="flex-box">
-                                <div className="flex-box-title">Delivery</div>
+                                <div className="flex-box-title" onClick={()=>navigate('/delivery')}>Delivery</div>
                                 <div className="flex-box-subtitle">set delivery to rider</div>
                             </div>
                         </div>

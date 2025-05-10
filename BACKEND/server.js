@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const csv = require("csv-parser");
 const http = require("http");
 const { Server } = require("socket.io");
-
+const port = 5000;
 
 
 const app = express();
@@ -675,6 +675,7 @@ app.post("/api/information", async (req, res) => {
 
 const BillSchema = new mongoose.Schema({
     email: {
+        unique: true,
         type: String,
         required: true,
     },
@@ -728,6 +729,128 @@ app.post('/api/submit-bill', async (req, res) => {
         res.status(500).json({ message: "Failed to store bill." });
     }
 });
+app.get('/api/bills', async (req, res) => {
+    const email = req.query.email; // Get email from query parameter
+    try {
+      // Filter bills by email
+      const bills = await Bill.find({ email });
+      res.json(bills);
+    } catch (err) {
+      res.status(500).send('Error fetching bills');
+    }
+  });
+  
+
+
+// models/Payment.js
+
+
+const paymentSchema = new mongoose.Schema({
+  paymentID: { type: String, required: true, unique: true }, 
+  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserProfile', required: true },
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: false }, 
+  amount: { type: Number, required: true },
+  date: { type: Date, default: Date.now },
+  paymentMethod: {
+    type: String,
+    enum: ['Bkash', 'NetBanking', 'CreditCard'],
+    required: true
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Completed', 'Failed'],
+    default: 'Pending'
+  },
+  bkashDetails: {
+    bkashNumber: String,
+    transactionId: String,
+  },
+  netBankingDetails: {
+    bankName: String,
+    accountNumber: String
+  }
+});
+
+const Payment = mongoose.model('Payment', paymentSchema);
+
+
+
+
+
+
+
+
+//search schema
+
+
+
+const searchSchema = new mongoose.Schema({
+    customerId: {
+        type: String,
+        required: true,
+        ref: "UserProfile"
+    },
+    searchQuery: {
+        type: String,
+        required: true
+    },
+    searchBy: {
+        type: String,
+        enum: ["title", "author"],
+        required: true
+    },
+    searchDate: {
+        type: Date,
+        default: Date.now
+    }
+
+}
+,{collection: "Book"});
+
+const Search = mongoose.model("Search", searchSchema);
+
+// --- Search Endpoint
+app.get("/api/search", async (req, res) => {
+    const { by, value, customerId } = req.query;
+
+    if (!by || !value) {
+        return res.status(400).json({ message: "Missing search parameters" });
+    }
+
+    const searchField = by === "author" ? "Book-Author" : "Book-Title";
+
+    try {
+        // Query books collection
+        const results = await Book.find(
+            { [searchField]: { $regex: value, $options: "i" } },
+            { "Book-Title": 1, "Image-URL-L": 1, Price: 1, "Book-Author": 1, _id: 0 }
+        );
+
+        const formatted = results.map(book => ({
+            title: book["Book-Title"],
+            imageURLS: { medium: book["Image-URL-L"] },
+            Price: book.Price,
+            author: book["Book-Author"]
+        }));
+
+        // Optional: Log the search
+        if (customerId) {
+            await Search.create({
+                customerId,
+                searchQuery: value,
+                searchBy: by
+            });
+        }
+
+        res.json(formatted);
+    } catch (err) {
+        console.error("❌ Error during search:", err);
+        res.status(500).json({ message: "Server error during search" });
+    }
+});
+
+
+
 
 
 
