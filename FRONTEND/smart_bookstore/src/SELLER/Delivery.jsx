@@ -48,6 +48,8 @@ const App = () => {
       .catch(error => console.error('Error submitting bill:', error));
   };
 
+
+  
   return (
     <div style={{ display: 'flex', padding: '20px' }}>
       {/* Sidebar: display list of bills only if email is entered */}

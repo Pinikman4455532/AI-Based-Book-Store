@@ -25,6 +25,8 @@ const OffersManager = () => {
         }
     };
 
+
+    
     const fetchBooks = async () => {
         try {
             const res = await axios.get("http://localhost:5000/api/books");
