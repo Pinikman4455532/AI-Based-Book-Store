@@ -12,8 +12,9 @@ import Seller from './LOGIN/Seller'
 
 import Payment from './CUSTOMER/Payment'
 import Delivery from './SELLER/Delivery'
-import Offer from './Seller/Offer'
+import Offer from './SELLER/Offer'
 import Announce from './CUSTOMER/Announce'
+import Swap from './CUSTOMER/Swap'
 
 import FrontPage from './CUSTOMER/FrontPage'
 import CustomerProfile from './CUSTOMER/CustomerProfile'
@@ -56,7 +57,7 @@ function App() {
       {path: "/delivery", element: <><Delivery/></>},
       {path: "/offer", element: <><Offer/></>},
       {path: "/announce", element:<><Announce/></>},
-
+      {path: "/swap", element:<><Swap/></>},
       {path: "/customerinformation", element: <><CustomerInformation /></>},
     ]
   )

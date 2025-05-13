@@ -3,12 +3,14 @@ import axios from "axios";
 
 const OffersManager = () => {
     const [offers, setOffers] = useState([]);
+    const [allBooks, setAllBooks] = useState([]);
     const [form, setForm] = useState({
         title: "",
         description: "",
         discountPercentage: "",
         validFrom: "",
-        validTo: ""
+        validTo: "",
+        books: []
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
@@ -22,30 +24,61 @@ const OffersManager = () => {
         }
     };
 
+    const fetchBooks = async () => {
+        try {
+            const res = await axios.get("http://localhost:5000/api/books");
+            setAllBooks(res.data);
+        } catch (err) {
+            console.error("Failed to fetch books", err);
+        }
+    };
+
     useEffect(() => {
         fetchOffers();
+        fetchBooks();
     }, []);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    const handleBookSelect = (e) => {
+        const selectedBooks = Array.from(e.target.selectedOptions, opt => opt.value);
+        const selectedTitles = Array.from(e.target.selectedOptions, opt => opt.text);
+
+        setForm(prev => ({
+            ...prev,
+            books: selectedBooks,
+            title: selectedBooks.length === 1 ? selectedTitles[0] : prev.title
+        }));
+    };
+
+
     const handleAddOffer = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
-
+        console.log("Submitting offer with books:", form.books);
         try {
             const res = await axios.post("http://localhost:5000/api/offer", {
-                ...form,
+                title: form.title,
+                description: form.description,
                 discountPercentage: parseFloat(form.discountPercentage),
                 validFrom: new Date(form.validFrom),
                 validTo: new Date(form.validTo),
-                isActive: true
+                isActive: true,
+                books: form.books // ✅ THIS LINE IS THE FIX
             });
 
             setMessage(res.data.message);
-            setForm({ title: "", description: "", discountPercentage: "", validFrom: "", validTo: "" });
+            setForm({
+                title: "",
+                description: "",
+                discountPercentage: "",
+                validFrom: "",
+                validTo: "",
+                books: []
+            });
             fetchOffers();
         } catch (err) {
             console.error("Failed to add offer", err);
@@ -54,6 +87,7 @@ const OffersManager = () => {
 
         setLoading(false);
     };
+
 
     const deleteOffer = async (id) => {
         try {
@@ -73,6 +107,15 @@ const OffersManager = () => {
                 <input type="number" name="discountPercentage" placeholder="Discount (%)" value={form.discountPercentage} onChange={handleChange} required />
                 <input type="date" name="validFrom" value={form.validFrom} onChange={handleChange} required />
                 <input type="date" name="validTo" value={form.validTo} onChange={handleChange} required />
+
+                <select multiple value={form.books} onChange={handleBookSelect}>
+                    {allBooks.map(book => (
+                        <option key={book._id} value={book._id}>
+                            {book.title}
+                        </option>
+                    ))}
+                </select>
+
                 <button type="submit" disabled={loading}>
                     {loading ? "Adding..." : "Add Offer"}
                 </button>
@@ -87,6 +130,8 @@ const OffersManager = () => {
                         <strong>{offer.title}</strong> - {offer.discountPercentage}% off
                         <br />
                         Valid: {new Date(offer.validFrom).toLocaleDateString()} to {new Date(offer.validTo).toLocaleDateString()}
+                        <br />
+                        Books: {offer.books?.length ? offer.books.map(book => book.title).join(", ") : "No books attached"}
                         <br />
                         <button onClick={() => deleteOffer(offer._id)}>Delete</button>
                     </li>

@@ -774,14 +774,14 @@ app.post('/api/submit-bill', async (req, res) => {
 app.get('/api/bills', async (req, res) => {
     const email = req.query.email; // Get email from query parameter
     try {
-      // Filter bills by email
-      const bills = await Bill.find({ email });
-      res.json(bills);
+        // Filter bills by email
+        const bills = await Bill.find({ email });
+        res.json(bills);
     } catch (err) {
-      res.status(500).send('Error fetching bills');
+        res.status(500).send('Error fetching bills');
     }
-  });
-  
+});
+
 
 
 
@@ -819,7 +819,7 @@ const searchSchema = new mongoose.Schema({
     }
 
 }
-,{collection: "Book"});
+    , { collection: "Book" });
 
 const Search = mongoose.model("Search", searchSchema);
 
@@ -868,6 +868,7 @@ const offerSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
+        unique: true,
     },
     description: String,
     discountPercentage: {
@@ -887,14 +888,18 @@ const offerSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
-    }
+    },
+    books: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Book"  // Assuming you have a "Book" model
+    }]
 }, { collection: "Offer" });
 
 const Offer = mongoose.model("Offer", offerSchema);
 //  Add a new offer
 app.post("/api/offer", async (req, res) => {
     try {
-        const { title, description, discountPercentage, validFrom, validTo, isActive } = req.body;
+        const { title, description, discountPercentage, validFrom, validTo, isActive, books } = req.body;
 
         if (!title || discountPercentage === undefined || !validFrom || !validTo) {
             return res.status(400).json({ message: "Required fields missing" });
@@ -906,7 +911,8 @@ app.post("/api/offer", async (req, res) => {
             discountPercentage,
             validFrom,
             validTo,
-            isActive
+            isActive,
+            books // ✅ this MUST be included
         });
 
         await newOffer.save();
@@ -917,16 +923,19 @@ app.post("/api/offer", async (req, res) => {
     }
 });
 
+
+
 //  Get all offers
 app.get("/api/offers", async (req, res) => {
     try {
-        const offers = await Offer.find();
+        const offers = await Offer.find().populate("books", "title"); // ✅ populates book titles
         res.json(offers);
     } catch (error) {
         console.error("❌ Error fetching offers:", error);
         res.status(500).json({ message: "Server error while fetching offers" });
     }
 });
+
 
 
 //  Delete an offer by ID
@@ -944,6 +953,123 @@ app.delete("/api/offer/:id", async (req, res) => {
         res.status(500).json({ message: "Server error while deleting offer" });
     }
 });
+// Get an offer by title
+app.get("/api/offer/title/:title", async (req, res) => {
+    try {
+        const offer = await Offer.findOne({ title: req.params.title });
+
+        if (!offer) {
+            return res.status(404).json({ message: "Offer not found" });
+        }
+
+        res.json(offer);
+    } catch (error) {
+        console.error("❌ Error fetching offer by title:", error);
+        res.status(500).json({ message: "Server error while fetching offer" });
+    }
+});
+
+//swap
+
+// swap.js
+const swapSchema = new mongoose.Schema({
+    bookTitle: {
+        type: String,
+        required: true
+    },
+    requesterEmail: {
+        type: String,
+        required: true
+    },
+    responderEmail: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ["pending", "accepted", "declined", "cancelled"],
+        default: "pending"
+    },
+    requestDate: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    collection: "Book"
+});
+
+// Optionally enforce uniqueness
+swapSchema.index({ bookTitle: 1, requesterEmail: 1, responderEmail: 1 }, { unique: true });
+
+// Add Swap Request
+app.post("/api/swap", async (req, res) => {
+    try {
+        const { bookTitle, requesterEmail, responderEmail } = req.body;
+
+        const requester = await UserProfile.findOne({ email: requesterEmail });
+        const responder = await UserProfile.findOne({ email: responderEmail });
+
+        if (!requester || !responder) {
+            return res.status(400).json({ message: "Invalid requester or responder email" });
+        }
+
+        const swap = new Swap({ bookTitle, requesterEmail, responderEmail });
+        await swap.save();
+
+        io.emit("newSwapRequest", swap);
+
+        res.status(201).json({ message: "Swap request created", swap });
+    } catch (err) {
+        console.error("❌ Error:", err);
+        res.status(500).json({ message: "Error creating swap request", error: err.message });
+    }
+});
+
+
+// Update Swap Status
+app.put("/api/swap/:bookTitle", async (req, res) => {
+    const { status, userEmail } = req.body;
+
+    if (!["pending", "accepted", "declined", "cancelled"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+    }
+
+    try {
+        const swap = await Swap.findOne({ bookTitle: req.params.bookTitle });
+
+        if (!swap) return res.status(404).json({ message: "Swap not found" });
+
+        if (swap.responderEmail !== userEmail) {
+            return res.status(403).json({ message: "Only responder can update status" });
+        }
+
+        swap.status = status;
+        await swap.save();
+        io.emit("swapStatusUpdated", swap);
+
+        res.json(swap);
+    } catch (err) {
+        res.status(500).json({ message: "Error updating swap", error: err.message });
+    }
+});
+
+// Get all swaps
+app.get("/api/swaps", async (req, res) => {
+    try {
+        const swaps = await Swap.find()
+            .populate("requesterId", "firstName lastName email")
+            .populate("responderId", "firstName lastName email");
+
+        res.json(swaps);
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching swaps" });
+    }
+});
+
+
+
+
+
 
 
 
