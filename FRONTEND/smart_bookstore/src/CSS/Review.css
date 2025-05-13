@@ -1,0 +1,73 @@
+/* General background */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #2e1f38, #c72c6c);
+    color: white;
+    padding: 2rem;
+}
+
+/* Review section container */
+.review-section {
+    max-width: 600px;
+    margin: auto;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+/* Title style */
+.review-section h2 {
+    font-size: 1.8rem;
+    color: #d1d1d1;
+    margin-bottom: 1rem;
+}
+
+/* Review list */
+.review-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.review-section li {
+    margin-bottom: 0.7rem;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+}
+
+/* Bold email */
+.review-section b {
+    color: #a7f0ba;
+}
+
+/* Review input box */
+textarea {
+    width: 100%;
+    height: 80px;
+    margin-top: 1rem;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    resize: none;
+    font-size: 1rem;
+}
+
+/* Submit button */
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #b7ff8a;
+    border: none;
+    border-radius: 10px;
+    color: #1e1e1e;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #d3ffaa;
+}
+

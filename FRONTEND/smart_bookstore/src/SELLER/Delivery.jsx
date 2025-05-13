@@ -58,7 +58,7 @@ const App = () => {
             {bills.map((bill, index) => (
               <li key={index} style={{ marginBottom: '10px' }}>
                 <span>{bill.service} - ${bill.totalAmount}</span>
-                <button 
+                <button
                   style={{ marginLeft: '10px', padding: '5px 10px' }}
                   onClick={() => handleSelectBill(bill)}
                 >
@@ -76,32 +76,38 @@ const App = () => {
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '10px' }}>
             <label>Email: </label>
-            <input 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               style={{ width: '100%', padding: '8px' }}
             />
           </div>
 
           <div style={{ marginBottom: '10px' }}>
             <label>Service: </label>
-            <input 
-              type="text" 
-              value={service} 
-              onChange={(e) => setService(e.target.value)} 
-              required 
+            <select
+              value={service}
+              onChange={(e) => setService(e.target.value)}
+              required
               style={{ width: '100%', padding: '8px' }}
-            />
+            >
+              <option value="">Select a service</option>
+              <option value="Pathao">Pathao</option>
+              <option value="Redx">Redx</option>
+              <option value="Steadfast">Steadfast</option>
+              <option value="Fedx">Fedx</option>
+            </select>
           </div>
+
 
           <div style={{ marginBottom: '10px' }}>
             <label>Quantity: </label>
-            <input 
-              type="number" 
-              value={quantity} 
-              onChange={(e) => setQuantity(e.target.value)} 
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
               min="1"
               required
               style={{ width: '100%', padding: '8px' }}
@@ -110,16 +116,16 @@ const App = () => {
 
           <div style={{ marginBottom: '10px' }}>
             <label>Total Amount: </label>
-            <input 
-              type="number" 
-              value={totalAmount} 
-              onChange={(e) => setTotalAmount(e.target.value)} 
-              required 
+            <input
+              type="number"
+              value={totalAmount}
+              onChange={(e) => setTotalAmount(e.target.value)}
+              required
               style={{ width: '100%', padding: '8px' }}
             />
           </div>
 
-          <button 
+          <button
             type="submit"
             style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}
           >

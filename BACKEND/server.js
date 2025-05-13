@@ -783,7 +783,73 @@ app.get('/api/bills', async (req, res) => {
 });
 
 
+///////////////////////////////////
 
+const DeliverySchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        lowercase: true,
+        trim: true
+    },
+    service: {
+        type: String,
+        required: true,
+        trim: true,
+        enum: ['Pathao', 'Fedx', 'Steadfast', 'Redx'] 
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        min: 1
+    },
+    totalAmount: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const Delivery = mongoose.model('Delivery', DeliverySchema);
+
+// Routes
+app.get('/api/bills', async (req, res) => {
+    try {
+        const { email } = req.query;
+        if (!email) return res.status(400).json({ message: 'Email is required' });
+
+        const bills = await Delivery.find({ email });
+        res.json(bills);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching bills', error });
+    }
+});
+
+app.post('/api/bills', async (req, res) => {
+    try {
+        const { email, service, quantity, totalAmount } = req.body;
+
+        if (!email || !service || !quantity || totalAmount == null) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        const newDelivery = new Delivery({
+            email,
+            service,
+            quantity,
+            totalAmount
+        });
+
+        await newDelivery.save();
+        res.status(201).json({ message: 'Bill created successfully', newDelivery });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating bill', error });
+    }
+});
 
 
 
@@ -969,103 +1035,52 @@ app.get("/api/offer/title/:title", async (req, res) => {
     }
 });
 
-//swap
+//review
+const reviewSchema = new mongoose.Schema({
+    email: { type: String, required: true },
+    title: { type: String, required: true }, // Book title
+    review: { type: String, required: true },
+    date: { type: Date, default: Date.now }
+},{collection:"Review"});
+const Review = mongoose.model("Review", reviewSchema);
 
-// swap.js
-const swapSchema = new mongoose.Schema({
-    bookTitle: {
-        type: String,
-        required: true
-    },
-    requesterEmail: {
-        type: String,
-        required: true
-    },
-    responderEmail: {
-        type: String,
-        required: true
-    },
-    status: {
-        type: String,
-        enum: ["pending", "accepted", "declined", "cancelled"],
-        default: "pending"
-    },
-    requestDate: {
-        type: Date,
-        default: Date.now
-    }
-}, {
-    collection: "Book"
-});
+app.post("/api/add-review", async (req, res) => {
+    const { email, title, review } = req.body;
 
-// Optionally enforce uniqueness
-swapSchema.index({ bookTitle: 1, requesterEmail: 1, responderEmail: 1 }, { unique: true });
-
-// Add Swap Request
-app.post("/api/swap", async (req, res) => {
-    try {
-        const { bookTitle, requesterEmail, responderEmail } = req.body;
-
-        const requester = await UserProfile.findOne({ email: requesterEmail });
-        const responder = await UserProfile.findOne({ email: responderEmail });
-
-        if (!requester || !responder) {
-            return res.status(400).json({ message: "Invalid requester or responder email" });
-        }
-
-        const swap = new Swap({ bookTitle, requesterEmail, responderEmail });
-        await swap.save();
-
-        io.emit("newSwapRequest", swap);
-
-        res.status(201).json({ message: "Swap request created", swap });
-    } catch (err) {
-        console.error("❌ Error:", err);
-        res.status(500).json({ message: "Error creating swap request", error: err.message });
-    }
-});
-
-
-// Update Swap Status
-app.put("/api/swap/:bookTitle", async (req, res) => {
-    const { status, userEmail } = req.body;
-
-    if (!["pending", "accepted", "declined", "cancelled"].includes(status)) {
-        return res.status(400).json({ message: "Invalid status" });
+    if (!email || !title || !review) {
+        return res.status(400).json({ error: "Missing required fields." });
     }
 
     try {
-        const swap = await Swap.findOne({ bookTitle: req.params.bookTitle });
-
-        if (!swap) return res.status(404).json({ message: "Swap not found" });
-
-        if (swap.responderEmail !== userEmail) {
-            return res.status(403).json({ message: "Only responder can update status" });
-        }
-
-        swap.status = status;
-        await swap.save();
-        io.emit("swapStatusUpdated", swap);
-
-        res.json(swap);
+        const newReview = new Review({ email, title, review });
+        await newReview.save();
+        res.status(201).json({ message: "Review added successfully." });
     } catch (err) {
-        res.status(500).json({ message: "Error updating swap", error: err.message });
+        console.error(err);
+        res.status(500).json({ error: "Server error while adding review." });
     }
 });
 
-// Get all swaps
-app.get("/api/swaps", async (req, res) => {
+
+app.get("/api/reviews", async (req, res) => {
+    const { title } = req.query;
+
+    if (!title) {
+        return res.status(400).json({ error: "Title is required." });
+    }
+
     try {
-        const swaps = await Swap.find()
-            .populate("requesterId", "firstName lastName email")
-            .populate("responderId", "firstName lastName email");
-
-        res.json(swaps);
+        const reviews = await Review.find({ title }).sort({ date: -1 });
+        res.json({ reviews });
     } catch (err) {
-        res.status(500).json({ message: "Error fetching swaps" });
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch reviews." });
     }
 });
 
+
+// Optional health check
+app.get("/", (req, res) => res.send("📚 Book API is running"));
 
 
 
