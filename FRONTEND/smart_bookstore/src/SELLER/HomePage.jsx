@@ -100,15 +100,15 @@ const HomePage = () => {
                                 <div className="flex-box-title">All Books</div>
                                 <div className="flex-box-subtitle">see all books</div>
                             </div>
-                            <div className="flex-box">
-                                <div className="flex-box-title" onClick={()=>navigate('/delivery')}>Delivery</div>
+                            <div className="flex-box" onClick={() => navigate('/delivery')}>
+                                <div className="flex-box-title">Delivery</div>
                                 <div className="flex-box-subtitle">set delivery to rider</div>
                             </div>
                         </div>
 
                         {/* Row 2 */}
                         <div className="grid-row">
-                            <div className="flex-box">
+                            <div className="flex-box" onClick={() => navigate('/offer')}>
                                 <div className="flex-box-title">Offers</div>
                                 <div className="flex-box-subtitle">announce an offer</div>
                             </div>

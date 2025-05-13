@@ -27,14 +27,21 @@ const Bill = () => {
                 return res.json();
             })
             .then((data) => {
-                setPurchases(data);
+                if (Array.isArray(data)) {
+                    setPurchases(data); // Already an array
+                } else if (data.purchases) {
+                    setPurchases(data.purchases); // Handle legacy structure
+                } else {
+                    setPurchases([]); // Default empty
+                }
                 setError("");
             })
             .catch((err) => {
-                setError("Error fetching purchases. Try again later.");
                 console.error(err);
+                setError("Error fetching purchases.");
             })
             .finally(() => setLoading(false));
+
     }, [email]);
 
     const totalAmount = purchases.reduce((acc, item) => acc + item.Price * item.quantity, 0);
@@ -55,17 +62,17 @@ const Bill = () => {
                 totalAmount,
             }),
         })
-        .then((res) => {
-            if (!res.ok) throw new Error("Failed to submit bill");
-            return res.json();
-        })
-        .then(() => {
-            alert("Payment successful! Bill stored.");
-        })
-        .catch((err) => {
-            setError("Error submitting bill. Try again later.");
-            console.error(err);
-        });
+            .then((res) => {
+                if (!res.ok) throw new Error("Failed to submit bill");
+                return res.json();
+            })
+            .then(() => {
+                alert("Payment successful! Bill stored.");
+            })
+            .catch((err) => {
+                setError("Error submitting bill. Try again later.");
+                console.error(err);
+            });
     };
 
     const handleDelete = (bookTitle) => {
@@ -74,42 +81,42 @@ const Bill = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ bookTitle, email }),
         })
-        .then((res) => {
-            if (!res.ok) throw new Error("Failed to delete purchase");
-            return res.json();
-        })
-        .then(() => {
-            setPurchases((prevPurchases) =>
-                prevPurchases.filter((item) => item.bookTitle !== bookTitle)
-            );
-        })
-        .catch((err) => {
-            setError("Error deleting purchase. Try again later.");
-            console.error(err);
-        });
+            .then((res) => {
+                if (!res.ok) throw new Error("Failed to delete purchase");
+                return res.json();
+            })
+            .then(() => {
+                setPurchases((prevPurchases) =>
+                    prevPurchases.filter((item) => item.bookTitle !== bookTitle)
+                );
+            })
+            .catch((err) => {
+                setError("Error deleting purchase. Try again later.");
+                console.error(err);
+            });
     };
 
     return (
-        <div className="bill-container">
+        <div className="bill-container-B">
             {loading ? (
                 <p>Loading purchases...</p>
             ) : error ? (
-                <p className="error">{error}</p>
+                <p className="error-B">{error}</p>
             ) : purchases.length === 0 ? (
                 <p>No purchases found.</p>
             ) : (
-                <div className="bill-content">
+                <div className="bill-content-B">
                     {/* Left: Purchases List */}
-                    <div className="left-section">
-                        <div className="purchases-list">
+                    <div className="left-section-B">
+                        <div className="purchases-list-B">
                             {purchases.map((item, index) => (
-                                <div key={index} className="purchase-item">
-                                    <div className="purchase-details">
-                                        <span className="bookTTL">{item.bookTitle}</span>
-                                        <span className="PrZ">${item.Price.toFixed(2)}</span>
-                                        <span className="QnTTy">X{item.quantity}</span>
-                                        <button 
-                                            className="delete-btn" 
+                                <div key={index} className="purchase-item-B">
+                                    <div className="purchase-details-B">
+                                        <span className="bookTTL-B">{item.bookTitle}</span>
+                                        <span className="PrZ-B">${item.Price.toFixed(2)}</span>
+                                        <span className="QnTTy-B">X{item.quantity}</span>
+                                        <button
+                                            className="delete-btn-B"
                                             onClick={() => handleDelete(item.bookTitle)}>
                                             Cancel
                                         </button>
@@ -117,48 +124,48 @@ const Bill = () => {
                                 </div>
                             ))}
                         </div>
-                        <div className="total-amount">
+                        <div className="total-amount-B">
                             <h3>Total Amount: ${totalAmount.toFixed(2)}</h3>
                         </div>
                     </div>
 
                     {/* Right: Payment Form */}
-                    <div className="right-section">
-                        <form className="payment-form" onSubmit={handlePayment}>
+                    <div className="right-section-B">
+                        <form className="payment-form-B" onSubmit={handlePayment}>
                             <h3>Payment Information</h3>
                             <label>Email:</label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                value={formData.email} 
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
                                 onChange={handleChange}
-                                required 
+                                required
                             />
                             <label>Location:</label>
-                            <input 
-                                type="text" 
-                                name="location" 
-                                value={formData.location} 
+                            <input
+                                type="text"
+                                name="location"
+                                value={formData.location}
                                 onChange={handleChange}
-                                required 
+                                required
                             />
                             <label>Phone Number:</label>
-                            <input 
-                                type="tel" 
-                                name="phone" 
-                                value={formData.phone} 
+                            <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
                                 onChange={handleChange}
-                                required 
+                                required
                             />
-                            <button type="submit" className="payment-btn">Payment</button>
+                            <button type="submit" className="payment-btn-B">Payment</button>
                         </form>
                     </div>
                 </div>
             )}
 
             {/* Home Button */}
-            <div className="bottom-buttons">
-                <Link to="/frontpage" className="home-btn">Home</Link>
+            <div className="bottom-buttons-B">
+                <Link to="/frontpage" className="home-btn-B">Home</Link>
             </div>
         </div>
     );

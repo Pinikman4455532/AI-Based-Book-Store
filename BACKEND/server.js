@@ -311,21 +311,19 @@ const bookSchema = new mongoose.Schema(
 const Book = mongoose.model("Book", bookSchema);
 
 // GET: Fetch all books (minimal info)
+// FIXED: Include _id so frontend gets book IDs
 app.get("/api/books", async (req, res) => {
     try {
         const books = await Book.find({}, {
             "Book-Title": 1,
             "Image-URL-L": 1,
             Price: 1,
-            "Book-Author": 1,
-            _id: 0
+            "Book-Author": 1
+            // ⛔ _id is NOT excluded now
         });
 
-        if (!books || books.length === 0) {
-            return res.status(404).json({ error: "No books found" });
-        }
-
         const formattedBooks = books.map(book => ({
+            _id: book._id,
             title: book["Book-Title"],
             imageURLS: {
                 medium: book["Image-URL-L"]
@@ -796,7 +794,7 @@ const DeliverySchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ['Pathao', 'Fedx', 'Steadfast', 'Redx'] 
+        enum: ['Pathao', 'Fedx', 'Steadfast', 'Redx']
     },
     quantity: {
         type: Number,
@@ -929,7 +927,7 @@ app.get("/api/search", async (req, res) => {
     }
 });
 
-// ✅ Offer Schema
+//  Offer Schema
 const offerSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -957,7 +955,7 @@ const offerSchema = new mongoose.Schema({
     },
     books: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Book"  // Assuming you have a "Book" model
+        ref: "Book"
     }]
 }, { collection: "Offer" });
 
@@ -978,29 +976,29 @@ app.post("/api/offer", async (req, res) => {
             validFrom,
             validTo,
             isActive,
-            books // ✅ this MUST be included
+            books  // ✅ books must be an array of valid ObjectId strings
         });
 
-        await newOffer.save();
-        res.status(201).json({ message: "Offer created successfully", offer: newOffer });
+        const savedOffer = await newOffer.save();
+        await savedOffer.populate("books"); // ✅ populate to verify book details
+
+        res.status(201).json({ message: "Offer created successfully", offer: savedOffer });
     } catch (error) {
         console.error("❌ Error adding offer:", error);
         res.status(500).json({ message: "Server error while creating offer" });
     }
 });
 
-
-
-//  Get all offers
 app.get("/api/offers", async (req, res) => {
     try {
-        const offers = await Offer.find().populate("books", "title"); // ✅ populates book titles
+        const offers = await Offer.find().populate("books", "Book-Title");
         res.json(offers);
     } catch (error) {
         console.error("❌ Error fetching offers:", error);
         res.status(500).json({ message: "Server error while fetching offers" });
     }
 });
+
 
 
 
@@ -1015,25 +1013,13 @@ app.delete("/api/offer/:id", async (req, res) => {
 
         res.json({ message: "Offer deleted successfully" });
     } catch (error) {
-        console.error("❌ Error deleting offer:", error);
+        console.error(" Error deleting offer:", error);
         res.status(500).json({ message: "Server error while deleting offer" });
     }
 });
 // Get an offer by title
-app.get("/api/offer/title/:title", async (req, res) => {
-    try {
-        const offer = await Offer.findOne({ title: req.params.title });
 
-        if (!offer) {
-            return res.status(404).json({ message: "Offer not found" });
-        }
 
-        res.json(offer);
-    } catch (error) {
-        console.error("❌ Error fetching offer by title:", error);
-        res.status(500).json({ message: "Server error while fetching offer" });
-    }
-});
 
 //review
 const reviewSchema = new mongoose.Schema({
@@ -1041,7 +1027,7 @@ const reviewSchema = new mongoose.Schema({
     title: { type: String, required: true }, // Book title
     review: { type: String, required: true },
     date: { type: Date, default: Date.now }
-},{collection:"Review"});
+}, { collection: "Review" });
 const Review = mongoose.model("Review", reviewSchema);
 
 app.post("/api/add-review", async (req, res) => {
@@ -1080,7 +1066,7 @@ app.get("/api/reviews", async (req, res) => {
 
 
 // Optional health check
-app.get("/", (req, res) => res.send("📚 Book API is running"));
+app.get("/", (req, res) => res.send(" Book API is running"));
 
 
 

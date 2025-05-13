@@ -1,73 +1,95 @@
-/* General background */
-body {
-    margin: 0;
+.review-page {
+    background-color: #000;  /* dark background */
+    color: #fff;
+    padding: 60px 20px;
+    min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right, #2e1f38, #c72c6c);
-    color: white;
-    padding: 2rem;
+    opacity: 0.95;
 }
 
-/* Review section container */
-.review-section {
-    max-width: 600px;
-    margin: auto;
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+.review-page h2 {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: aquamarine;
 }
 
-/* Title style */
-.review-section h2 {
-    font-size: 1.8rem;
-    color: #d1d1d1;
-    margin-bottom: 1rem;
-}
-
-/* Review list */
-.review-section ul {
-    list-style-type: none;
+/* Review List */
+.review-list {
+    list-style: none;
     padding: 0;
+    margin: 0 auto 40px;
+    max-width: 800px;
 }
 
-.review-section li {
-    margin-bottom: 0.7rem;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
+.review-list li {
+    background-color: #1c1c1c;
+    border-left: 4px solid #40DFB1;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
 }
 
-/* Bold email */
-.review-section b {
-    color: #a7f0ba;
+.review-list li:hover {
+    transform: translateX(5px);
 }
 
-/* Review input box */
-textarea {
+.review-list strong {
+    color: #FFD700;
+}
+
+/* Review Form */
+.review-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.review-form textarea {
     width: 100%;
-    height: 80px;
-    margin-top: 1rem;
-    padding: 10px;
-    border-radius: 10px;
+    height: 120px;
+    padding: 15px;
+    border-radius: 8px;
     border: none;
-    resize: none;
-    font-size: 1rem;
+    resize: vertical;
+    font-size: 16px;
+    margin-bottom: 15px;
+    background-color: #2e2e2e;
+    color: #fff;
+    outline: none;
+    transition: border 0.3s ease;
 }
 
-/* Submit button */
-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #b7ff8a;
-    border: none;
-    border-radius: 10px;
-    color: #1e1e1e;
+.review-form textarea:focus {
+    border: 2px solid #40DFB1;
+}
+
+/* Submit Button */
+.review-form button {
+    padding: 10px 25px;
+    background-color: #40DFB1;
+    color: black;
+    font-size: 18px;
     font-weight: bold;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-button:hover {
-    background-color: #d3ffaa;
+.review-form button:hover {
+    background-color: #0b3796;
+    color: white;
 }
 
+/* Feedback Message */
+.review-msg {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #87f387;
+    text-align: center;
+}

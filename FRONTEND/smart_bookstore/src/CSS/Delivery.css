@@ -1,140 +1,97 @@
-/* General Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Background and container */
+/* General layout */
 body {
-  background: linear-gradient(to right, #2c3e50, #ec407a);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
 }
 
-.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 80%;
+h3 {
+    margin-top: 0;
+    color: #333;
 }
 
-/* Sidebar (Bill Items) */
-.sidebar {
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  width: 300px;
-  height: auto;
-  display: flex;
-  flex-direction: column;
+/* Container setup */
+.container-D {
+    display: flex;
+    padding: 20px;
 }
 
-.sidebar h3 {
-  margin-bottom: 20px;
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  color: #2c3e50;
+/* Sidebar styling */
+.sidebar-D {
+    width: 250px;
+    padding: 10px;
+    border-right: 1px solid #ccc;
+    background-color: #fff;
 }
 
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
+.sidebar-D h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
 }
 
-.sidebar li {
-  font-size: 1rem;
-  margin-bottom: 10px;
+.sidebar-D ul {
+    list-style: none;
+    padding: 0;
 }
 
-.select-btn {
-  background-color: #3498db;
-  padding: 5px 10px;
-  border: none;
-  color: white;
-  font-size: 12px;
-  cursor: pointer;
-  margin-left: 10px;
-  border-radius: 5px;
-}
-
-.select-btn:hover {
-  background-color: #2980b9;
-}
-
-/* Login Box Styling */
-.login-box {
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 300px;
-}
-
-.login-box h2 {
-  margin-bottom: 20px;
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-.login-box input {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.login-box .buttons {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.login-box button {
-  width: 48%;
-  padding: 10px;
-  border: none;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.back-btn {
-  background-color: #e74c3c;
-}
-
-.login-btn {
-  background-color: #3498db;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
+.sidebar-D li {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-  }
+}
 
-  .sidebar {
-    width: 100%;
-    margin-bottom: 20px;
-  }
+.sidebar-D button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+}
 
-  .login-box {
-    width: 100%;
-  }
+.sidebar-D button:hover {
+    background-color: #0056b3;
+}
+
+/* Form container */
+.form-container-D {
+    padding: 10px;
+    flex: 1;
+    background-color: #fff;
+    margin-left: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-container-D form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container-D label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-container-D input {
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+.form-container-D button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.form-container-D button:hover {
+    background-color: #388e3c;
 }
