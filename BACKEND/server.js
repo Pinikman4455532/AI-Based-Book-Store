@@ -814,7 +814,7 @@ const DeliverySchema = new mongoose.Schema({
 
 const Delivery = mongoose.model('Delivery', DeliverySchema);
 
-// Routes
+
 app.get('/api/bills', async (req, res) => {
     try {
         const { email } = req.query;
@@ -922,7 +922,7 @@ app.get("/api/search", async (req, res) => {
 
         res.json(formatted);
     } catch (err) {
-        console.error("❌ Error during search:", err);
+        console.error(" Error during search:", err);
         res.status(500).json({ message: "Server error during search" });
     }
 });
@@ -976,15 +976,15 @@ app.post("/api/offer", async (req, res) => {
             validFrom,
             validTo,
             isActive,
-            books  // ✅ books must be an array of valid ObjectId strings
+            books  //  books must be an array of valid ObjectId strings
         });
 
         const savedOffer = await newOffer.save();
-        await savedOffer.populate("books"); // ✅ populate to verify book details
+        await savedOffer.populate("books"); //  populate to verify book details
 
         res.status(201).json({ message: "Offer created successfully", offer: savedOffer });
     } catch (error) {
-        console.error("❌ Error adding offer:", error);
+        console.error(" Error adding offer:", error);
         res.status(500).json({ message: "Server error while creating offer" });
     }
 });
@@ -994,7 +994,7 @@ app.get("/api/offers", async (req, res) => {
         const offers = await Offer.find().populate("books", "Book-Title");
         res.json(offers);
     } catch (error) {
-        console.error("❌ Error fetching offers:", error);
+        console.error(" Error fetching offers:", error);
         res.status(500).json({ message: "Server error while fetching offers" });
     }
 });
@@ -1076,6 +1076,6 @@ app.get("/", (req, res) => res.send(" Book API is running"));
 
 
 
-// ✅ Start Server
+//  Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
