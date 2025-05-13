@@ -35,6 +35,8 @@ function App() {
 
       
 
+      
+
       {path: "/customer", element: <Customer setUsername={setUsername} />},
       {path: "/seller", element: <><Seller /></>},
 
