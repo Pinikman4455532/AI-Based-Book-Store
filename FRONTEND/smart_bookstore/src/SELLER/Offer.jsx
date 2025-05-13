@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import '../CSS/Offer.css'
 
 const OffersManager = () => {
     const [offers, setOffers] = useState([]);
@@ -27,7 +28,7 @@ const OffersManager = () => {
     const fetchBooks = async () => {
         try {
             const res = await axios.get("http://localhost:5000/api/books");
-            setAllBooks(res.data); // ✅ now includes _id
+            setAllBooks(res.data); //  now includes _id
         } catch (err) {
             console.error("Failed to fetch books", err);
         }
@@ -63,7 +64,7 @@ const OffersManager = () => {
                 validFrom: form.validFrom,
                 validTo: form.validTo,
                 isActive: true,
-                books: form.books // ✅ now using _id array
+                books: form.books //  now using _id array
             });
 
             setMessage(res.data.message);
